@@ -1,48 +1,43 @@
 package com.example.zeepwifi.controllers;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.zeepwifi.dto.AccountsCreateDTO;
+import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.services.AccountsService;
 
 
 @RestController
+@RequestMapping("/api/accounts")
 public class AccountsController {
-    
     @Autowired
-    private AccountsService zeepaccountService;
+    AccountsService accountsService;
 
-    // Retrieve all accounts route
-    @GetMapping("/getAccounts")
-    public ResponseEntity<List<Accounts>> getAccounts() {
-        List<Accounts> accounts = zeepaccountService.getAccounts();
-        return ResponseEntity.ok(accounts);
+    @Autowired
+    AccountsDTOMapper accountsDTOMapper;
+
+    // Retrieve all accounts endpoint
+    @GetMapping(value = "/all", produces = "application/json")
+    public ResponseEntity<?> getAllAccounts(@PageableDefault(size = 10, page = 0) Pageable pageable) {
+        return accountsService.getAllAccounts(pageable);
     }
 
-    // Retrieve account by accountUsername route
-    @GetMapping("/getAccountByUsername")
-    public ResponseEntity<Accounts> getAccountByUsername(@RequestParam String accountUsername) {
-        Optional<Accounts> account = zeepaccountService.getAccountByUsername(accountUsername);
-        return account.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    // Retrieve account by username endpoint
+    @GetMapping(value = "/{accountUsername}", produces = "application/json")
+    public ResponseEntity<?> getAccountByUsername(@PathVariable String accountUsername) {
+        return accountsService.getByAccountUsername(accountUsername);
     }
     
-    // Create new account route
-    @Async("asyncExecutor")
-    @PostMapping("/addnewaccount")
-    public ResponseEntity<Map<String, Object>> addAccount(@RequestBody Accounts account) {
-        Map<String, Object> response = zeepaccountService.addAccount(account);
-        if (Boolean.TRUE.equals(response.get("success"))) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.badRequest().body(response);
-        }
+    // Create new account endpoint
+    @PostMapping(value = "/addnewaccount", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> addAccount(@RequestBody AccountsCreateDTO accountsCreateDTO) {
+        Accounts accounts = accountsDTOMapper.accountsCreateDTO(accountsCreateDTO);
+        return accountsService.addAccount(accounts);
     }
     
 }

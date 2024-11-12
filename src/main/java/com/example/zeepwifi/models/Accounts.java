@@ -1,86 +1,31 @@
 package com.example.zeepwifi.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
+@Cacheable
 @Data
-@AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "zeep_accounts", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "accountUsername", "accountPassword"})
-})
-public class Accounts implements Serializable {
-
-    public Accounts() {
-        
-    }
-
+@Table(name = "zeep_accounts")
+public class Accounts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", nullable = false, unique = true)
+    public Long id;
 
-    @Column(nullable = false, unique = true)
-    private String accountUsername;
+    @Column(name = "account_username", nullable = false, unique = true)
+    public String accountUsername;
 
-    @Column(nullable = false, unique = false)
-    private String accountPassword;
+    @Column(name = "account_password", nullable = false, unique = false)
+    public String accountPassword;
+    
+    @Column(name = "created_at", nullable = false, unique = false, updatable = false)
+    public LocalDateTime createdAt;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "updated_at", nullable = false, unique = false)
+    public LocalDateTime updatedAt;
 
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAccountUsername() {
-        return accountUsername;
-    }
-
-    public void setAccountUsername(String accountUsername) {
-        this.accountUsername = accountUsername;
-    }
-
-    public String getAccountPassword() {
-        return accountPassword;
-    }
-
-    public void setAccountPassword(String accountPassword) {
-        this.accountPassword = accountPassword;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

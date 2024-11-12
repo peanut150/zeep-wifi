@@ -1,6 +1,7 @@
 package com.example.zeepwifi.services;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,42 +10,82 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.zeepwifi.dto.AccountsCheckDTO;
+import com.example.zeepwifi.dto.AccountsDTO;
+import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.repositories.AccountsRepository;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Service
 
 public class AccountsService {
     
     @Autowired
-    private AccountsRepository zeepaccountRepository;
+    AccountsRepository accountsRepository;
+
+    @Autowired
+    AccountsDTOMapper accountsDTOMapper;
 
     // Retrieve all accounts
-    public List<Accounts> getAccounts() {
-        return zeepaccountRepository.findAll();
+    public ResponseEntity<?> getAllAccounts(Pageable pageable) {
+        List<AccountsDTO> accounts = accountsRepository.getAllAccounts(pageable).getContent();
+
+        try {
+            if (accounts.isEmpty()) {
+                return new ResponseEntity<>(Collections.singletonMap("message", "There are no accounts found"),
+                HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(Collections.singletonMap("data", accounts), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occured"),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Retrieve account by accountUsername
-    public Optional<Accounts> getAccountByUsername(String accountUsername) {
-        return zeepaccountRepository.findByAccountUsername(accountUsername);
+    public ResponseEntity<?> getByAccountUsername(String accountUsername) {
+        Optional<AccountsCheckDTO> accounts = accountsRepository.findAccountByUsername(accountUsername);
+
+        try {
+            if (accounts.isEmpty()) {
+                return new ResponseEntity<>(Collections.singletonMap("message", "User not found"),
+                HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(Collections.singletonMap("data", accounts), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occured"),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     // Create new account
-    public Map<String, Object> addAccount(Accounts zeepaccountEntity) {
+    public ResponseEntity<?> addAccount(Accounts accounts) {
         Map<String, Object> response = new HashMap<>();
+
         try {
-            zeepaccountRepository.save(zeepaccountEntity);
+            // Check if account already exists
+            if (accountsRepository.existsByAccountUsername(accounts.getAccountUsername())) {
+                response.put("message", "Failed to add account: Account with this username already exists");
+                response.put("success", false);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            // Else save account
+            accountsRepository.save(accounts);
             response.put("message", "Account added successfully!");
             response.put("success", true);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
-            response.put("message", "Failed to add account: Duplicate entry for accountUsername or accountPassword.");
+            response.put("message", "Failed to add account: Duplicate entry for account username or password");
             response.put("success", false);
-        } catch (Exception e) {
-            response.put("message", "An error occurred while adding the account: " + e.getMessage());
-            response.put("success", false);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        return response;
     }
 }
