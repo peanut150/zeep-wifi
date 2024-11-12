@@ -1,4 +1,4 @@
-package com.example.zeepwifi.entity;
+package com.example.zeepwifi.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,9 +18,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "zeep_accounts", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "accountUsername", "accountPassword"})
 })
-public class ZeepAccountEntity implements Serializable {
+public class Accounts implements Serializable {
 
-    public ZeepAccountEntity() {
+    public Accounts() {
         
     }
 
@@ -31,7 +31,7 @@ public class ZeepAccountEntity implements Serializable {
     @Column(nullable = false, unique = true)
     private String accountUsername;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String accountPassword;
 
     @CreationTimestamp

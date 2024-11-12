@@ -9,34 +9,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.zeepwifi.entity.ZeepAccountEntity;
-import com.example.zeepwifi.services.ZeepAccountService;
+import com.example.zeepwifi.models.Accounts;
+import com.example.zeepwifi.services.AccountsService;
 
 
 @RestController
-public class zeepaccountController {
+public class AccountsController {
     
     @Autowired
-    private ZeepAccountService zeepaccountService;
+    private AccountsService zeepaccountService;
 
     // Retrieve all accounts route
     @GetMapping("/getAccounts")
-    public ResponseEntity<List<ZeepAccountEntity>> getAccounts() {
-        List<ZeepAccountEntity> accounts = zeepaccountService.getAccounts();
+    public ResponseEntity<List<Accounts>> getAccounts() {
+        List<Accounts> accounts = zeepaccountService.getAccounts();
         return ResponseEntity.ok(accounts);
     }
 
     // Retrieve account by accountUsername route
     @GetMapping("/getAccountByUsername")
-    public ResponseEntity<ZeepAccountEntity> getAccountByUsername(@RequestParam String accountUsername) {
-        Optional<ZeepAccountEntity> account = zeepaccountService.getAccountByUsername(accountUsername);
+    public ResponseEntity<Accounts> getAccountByUsername(@RequestParam String accountUsername) {
+        Optional<Accounts> account = zeepaccountService.getAccountByUsername(accountUsername);
         return account.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     
     // Create new account route
     @Async("asyncExecutor")
     @PostMapping("/addnewaccount")
-    public ResponseEntity<Map<String, Object>> addAccount(@RequestBody ZeepAccountEntity account) {
+    public ResponseEntity<Map<String, Object>> addAccount(@RequestBody Accounts account) {
         Map<String, Object> response = zeepaccountService.addAccount(account);
         if (Boolean.TRUE.equals(response.get("success"))) {
             return ResponseEntity.ok(response);

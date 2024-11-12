@@ -9,30 +9,30 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.zeepwifi.entity.ZeepAccountEntity;
-import com.example.zeepwifi.repositories.ZeepAccountRepository;
+import com.example.zeepwifi.models.Accounts;
+import com.example.zeepwifi.repositories.AccountsRepository;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
 
-public class ZeepAccountService {
+public class AccountsService {
     
     @Autowired
-    private ZeepAccountRepository zeepaccountRepository;
+    private AccountsRepository zeepaccountRepository;
 
     // Retrieve all accounts
-    public List<ZeepAccountEntity> getAccounts() {
+    public List<Accounts> getAccounts() {
         return zeepaccountRepository.findAll();
     }
 
     // Retrieve account by accountUsername
-    public Optional<ZeepAccountEntity> getAccountByUsername(String accountUsername) {
+    public Optional<Accounts> getAccountByUsername(String accountUsername) {
         return zeepaccountRepository.findByAccountUsername(accountUsername);
     }
     
     // Create new account
-    public Map<String, Object> addAccount(ZeepAccountEntity zeepaccountEntity) {
+    public Map<String, Object> addAccount(Accounts zeepaccountEntity) {
         Map<String, Object> response = new HashMap<>();
         try {
             zeepaccountRepository.save(zeepaccountEntity);
