@@ -19,9 +19,18 @@ public class Accounts {
     @Column(name = "account_username", nullable = false, unique = true)
     public String accountUsername;
 
+    @Column(name = "first_name", nullable = false, unique = false)
+    public String firstName;
+
+    @Column(name = "middle_name", nullable = false, unique = false)
+    public String middleName;
+
+    @Column(name = "last_name", nullable = false, unique = false)
+    public String lastName;
+
     @Column(name = "account_password", nullable = false, unique = false)
     public String accountPassword;
-    
+
     @Column(name = "created_at", nullable = false, unique = false, updatable = false)
     public LocalDateTime createdAt;
 

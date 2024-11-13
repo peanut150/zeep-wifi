@@ -14,6 +14,9 @@ public class AccountsDTOMapper {
         Accounts accounts = new Accounts();
 
         accounts.setAccountUsername(accountsCreateDTO.accountUsername);
+        accounts.setFirstName(accountsCreateDTO.firstName);
+        accounts.setMiddleName(accountsCreateDTO.middleName);
+        accounts.setLastName(accountsCreateDTO.lastName);
         accounts.setAccountPassword(new Password().hash(accountsCreateDTO.accountPassword));
         accounts.setCreatedAt(LocalDateTime.now());
         accounts.setUpdatedAt(LocalDateTime.now());

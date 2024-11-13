@@ -39,12 +39,12 @@ public class AuthController {
             return authService.signup(accounts);
         } catch (Exception e) {
             return new ResponseEntity<>(
-                Collections.singletonMap("message", "An unexpected error occured"),
+                Collections.singletonMap("message", "An unexpected error occurred"),
                 HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> login(@RequestBody UserLogin userLogin) {
         try {
             return authService.login(userLogin);

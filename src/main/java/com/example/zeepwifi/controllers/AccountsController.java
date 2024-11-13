@@ -32,12 +32,25 @@ public class AccountsController {
     public ResponseEntity<?> getAccountByUsername(@PathVariable String accountUsername) {
         return accountsService.getByAccountUsername(accountUsername);
     }
-    
+
+    // Update account endpoint
+    @PutMapping(value = {"", "/"}, consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> updateAccount(@RequestParam Long id, @RequestBody AccountsCreateDTO accountsCreateDTO) {
+        return accountsService.updateAccount(id, accountsCreateDTO);
+    }
+
+    // Delete account
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
+        return accountsService.deleteAccount(id);
+    }
+
+    /*
     // Create new account endpoint
     @PostMapping(value = "/addnewaccount", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> addAccount(@RequestBody AccountsCreateDTO accountsCreateDTO) {
         Accounts accounts = accountsDTOMapper.accountsCreateDTO(accountsCreateDTO);
         return accountsService.addAccount(accounts);
     }
-    
+    */
 }
