@@ -2,9 +2,7 @@ package com.example.zeepwifi.services;
 
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.example.zeepwifi.dto.AccountsCreateDTO;
@@ -18,7 +16,6 @@ import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.repositories.AccountsRepository;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

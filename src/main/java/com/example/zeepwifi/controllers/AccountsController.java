@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.zeepwifi.dto.AccountsCreateDTO;
 import com.example.zeepwifi.mapper.AccountsDTOMapper;
-import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.services.AccountsService;
 
 
