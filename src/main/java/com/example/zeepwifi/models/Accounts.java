@@ -1,11 +1,14 @@
 package com.example.zeepwifi.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+
+@Setter
+@Getter
 @Entity
 @Table(name = "zeep_accounts")
 public class Accounts {
