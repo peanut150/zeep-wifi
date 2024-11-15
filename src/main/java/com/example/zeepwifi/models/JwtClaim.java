@@ -2,11 +2,9 @@ package com.example.zeepwifi.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 @JsonIgnoreProperties
 public class JwtClaim {
     public String accountUsername;
