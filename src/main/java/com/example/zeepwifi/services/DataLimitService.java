@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
-import com.example.zeepwifi.dto.DataLimitDTO;
+import com.example.zeepwifi.dto.DataLimitDto;
 import com.example.zeepwifi.models.DataLimit;
 import com.example.zeepwifi.repositories.DataLimitRepository;
 
@@ -31,10 +31,10 @@ public class DataLimitService {
         String url = String.format("http://192.168.90.151:8080/data/?client_id=%d&package_id=%d", client_id, package_id);
 
         try {
-            ResponseEntity<DataLimitDTO> response = restTemplate.getForEntity(url, DataLimitDTO.class);
+            ResponseEntity<DataLimitDto> response = restTemplate.getForEntity(url, DataLimitDto.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                DataLimitDTO dataLimitDTO = response.getBody();
+                DataLimitDto dataLimitDTO = response.getBody();
 
                 DataLimit dataLimit = new DataLimit();
                 dataLimit.setClientID(client_id);
@@ -51,7 +51,7 @@ public class DataLimitService {
 
                 String csrfToken = dataLimitDTO.csrf_token;
                 
-                return ResponseEntity.ok(new DataLimitDTO(
+                return ResponseEntity.ok(new DataLimitDto(
                     dataLimit.getCounter(),
                     csrfToken,
                     dataLimit.getLimitCount(),

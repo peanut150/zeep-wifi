@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.zeepwifi.dto.AccountsCreateDTO;
+import com.example.zeepwifi.dto.RegisterDto;
 import com.example.zeepwifi.utils.Password;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.zeepwifi.dto.AccountsCheckDTO;
-import com.example.zeepwifi.dto.AccountsDTO;
+import com.example.zeepwifi.dto.LoginDto;
+import com.example.zeepwifi.dto.AccountsDto;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.repositories.AccountsRepository;
 
@@ -29,7 +29,7 @@ public class AccountsService {
 
     // Retrieve all accounts
     public ResponseEntity<?> getAllAccounts(Pageable pageable) {
-        List<AccountsDTO> accounts = accountsRepository.getAllAccounts(pageable).getContent();
+        List<AccountsDto> accounts = accountsRepository.getAllAccounts(pageable).getContent();
 
         try {
             if (accounts.isEmpty()) {
@@ -46,7 +46,7 @@ public class AccountsService {
 
     // Retrieve account by accountUsername
     public ResponseEntity<?> getByAccountUsername(String accountUsername) {
-        Optional<AccountsCheckDTO> accounts = accountsRepository.findAccountByUsername(accountUsername);
+        Optional<LoginDto> accounts = accountsRepository.findAccountByUsername(accountUsername);
 
         try {
             if (accounts.isEmpty()) {
@@ -63,7 +63,7 @@ public class AccountsService {
 
     // Update account
     @Transactional
-    public ResponseEntity<?> updateAccount(Long id, AccountsCreateDTO accountsCreateDTO) {
+    public ResponseEntity<?> updateAccount(Long id, RegisterDto accountsCreateDTO) {
         try {
             Optional<Accounts> accounts = accountsRepository.findById(id);
 

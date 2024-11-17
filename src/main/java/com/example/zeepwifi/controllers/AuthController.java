@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.zeepwifi.dto.AccountsCreateDTO;
+import com.example.zeepwifi.dto.RegisterDto;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.services.AuthService;
@@ -31,7 +31,7 @@ public class AuthController {
     JwtUtil jwtUtil;
 
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> signup(@RequestBody AccountsCreateDTO accountsCreateDTO) {
+    public ResponseEntity<?> signup(@RequestBody RegisterDto accountsCreateDTO) {
         try {
             Accounts accounts = new Accounts();
             accounts.setAccountUsername(accountsCreateDTO.getAccountUsername());

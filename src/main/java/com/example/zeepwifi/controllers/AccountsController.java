@@ -6,7 +6,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.zeepwifi.dto.AccountsCreateDTO;
+import com.example.zeepwifi.dto.RegisterDto;
 import com.example.zeepwifi.services.AccountsService;
 
 
@@ -30,7 +30,7 @@ public class AccountsController {
 
     // Update account endpoint
     @PutMapping(value = {"", "/"}, consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> updateAccount(@RequestParam Long id, @RequestBody AccountsCreateDTO accountsCreateDTO) {
+    public ResponseEntity<?> updateAccount(@RequestParam Long id, @RequestBody RegisterDto accountsCreateDTO) {
         return accountsService.updateAccount(id, accountsCreateDTO);
     }
 

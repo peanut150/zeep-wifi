@@ -3,7 +3,7 @@ package com.example.zeepwifi.dto;
 import lombok.Data;
 
 @Data
-public class AccountsCreateDTO {
+public class RegisterDto {
     public String accountUsername;
     public String firstName;
     public String middleName;

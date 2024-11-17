@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.zeepwifi.dto.AccountsCheckDTO;
+import com.example.zeepwifi.dto.LoginDto;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.JwtClaim;
 import com.example.zeepwifi.models.JwtType;
@@ -43,7 +43,7 @@ public class AuthService {
     }
 
     public ResponseEntity<?> login(UserLogin userLogin) {
-        Optional<AccountsCheckDTO> accounts = accountsRepository.findAccountByUsername(userLogin.accountUsername);
+        Optional<LoginDto> accounts = accountsRepository.findAccountByUsername(userLogin.accountUsername);
 
         if (accounts.isEmpty() || (!passwordUtil.verify(userLogin.accountPassword, accounts.get().accountPassword))) {
             return new ResponseEntity<>(Collections.singletonMap("message", "Incorrect username and/or password"), HttpStatus.NOT_FOUND);
