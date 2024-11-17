@@ -2,6 +2,9 @@ package com.example.zeepwifi.models;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 
 @Cacheable
@@ -34,9 +37,11 @@ public class DataLimit {
     @Column(name = "outgoing_packets")
     private Float outgoing_packets;
 
+    @CreationTimestamp
     @Column(name = "created_on", nullable = false, updatable = false)
     private LocalDateTime created_on;
 
+    @UpdateTimestamp
     @Column(name = "last_modified", nullable = false)
     private LocalDateTime last_modified;
 
