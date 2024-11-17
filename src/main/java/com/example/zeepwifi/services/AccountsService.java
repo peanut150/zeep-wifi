@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountsService {
     
     @Autowired
-    AccountsRepository accountsRepository;
+    private AccountsRepository accountsRepository;
 
     // Retrieve all accounts
     public ResponseEntity<?> getAllAccounts(Pageable pageable) {
@@ -38,23 +38,25 @@ public class AccountsService {
             }
 
             return new ResponseEntity<>(Collections.singletonMap("data", accounts), HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred"),
             HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Retrieve account by accountUsername
+    // Retrieve account by account username
     public ResponseEntity<?> getByAccountUsername(String accountUsername) {
         Optional<LoginDto> accounts = accountsRepository.findAccountByUsername(accountUsername);
 
         try {
             if (accounts.isEmpty()) {
-                return new ResponseEntity<>(Collections.singletonMap("message", "User not found"),
+                return new ResponseEntity<>(Collections.singletonMap("message", "Account not found"),
                 HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(Collections.singletonMap("data", accounts), HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred"),
             HttpStatus.INTERNAL_SERVER_ERROR);
@@ -63,7 +65,7 @@ public class AccountsService {
 
     // Update account
     @Transactional
-    public ResponseEntity<?> updateAccount(Long id, RegisterDto accountsCreateDTO) {
+    public ResponseEntity<?> updateAccount(Long id, RegisterDto registerDto) {
         try {
             Optional<Accounts> accounts = accountsRepository.findById(id);
 
@@ -72,10 +74,11 @@ public class AccountsService {
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            accountsCreateDTO.accountPassword = new Password().hash(accountsCreateDTO.accountPassword);
-            accountsRepository.updateAccount(id, accountsCreateDTO);
+            registerDto.accountPassword = new Password().hash(registerDto.accountPassword);
+            accountsRepository.updateAccount(id, registerDto);
             return new ResponseEntity<>(Collections.singletonMap("message", "Successfully updated account"),
                     HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -95,35 +98,11 @@ public class AccountsService {
             accountsRepository.deleteById(id);
             return new ResponseEntity<>(Collections.singletonMap("message", "Successfully deleted account"),
                     HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    /*
-    // Create new account
-    public ResponseEntity<?> addAccount(Accounts accounts) {
-        Map<String, Object> response = new HashMap<>();
-
-        try {
-            // Check if account already exists
-            if (accountsRepository.existsByAccountUsername(accounts.getAccountUsername())) {
-                response.put("message", "Failed to add account: Account with this username already exists");
-                response.put("success", false);
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-
-            // Else save account
-            accountsRepository.save(accounts);
-            response.put("message", "Account added successfully!");
-            response.put("success", true);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (DataIntegrityViolationException e) {
-            response.put("message", "Failed to add account: Duplicate entry for account username or password");
-            response.put("success", false);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-     */
+    
 }
