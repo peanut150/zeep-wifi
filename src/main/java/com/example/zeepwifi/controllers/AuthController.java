@@ -1,5 +1,6 @@
 package com.example.zeepwifi.controllers;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.zeepwifi.dto.AccountsCreateDTO;
-import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.services.AuthService;
 import com.example.zeepwifi.utils.JwtUtil;
+import com.example.zeepwifi.utils.Password;
 
 
 @RestController
@@ -29,13 +30,18 @@ public class AuthController {
     @Autowired
     JwtUtil jwtUtil;
 
-    @Autowired
-    AccountsDTOMapper accountsDTOMapper;
-
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> signup(@RequestBody AccountsCreateDTO accountsCreateDTO) {
         try {
-            Accounts accounts = accountsDTOMapper.accountsCreateDTO(accountsCreateDTO);
+            Accounts accounts = new Accounts();
+            accounts.setAccountUsername(accountsCreateDTO.getAccountUsername());
+            accounts.setFirstName(accountsCreateDTO.getFirstName());
+            accounts.setMiddleName(accountsCreateDTO.getMiddleName());
+            accounts.setLastName(accountsCreateDTO.getLastName());
+            accounts.setAccountPassword(new Password().hash(accountsCreateDTO.getAccountPassword()));
+            accounts.setCreatedAt(LocalDateTime.now());
+            accounts.setUpdatedAt(LocalDateTime.now());
+
             return authService.signup(accounts);
         } catch (Exception e) {
             return new ResponseEntity<>(

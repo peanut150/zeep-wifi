@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.zeepwifi.dto.AccountsCheckDTO;
-import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.JwtClaim;
 import com.example.zeepwifi.models.JwtType;
@@ -32,9 +31,6 @@ public class AuthService {
 
     @Autowired
     AccountsRepository accountsRepository;
-
-    @Autowired
-    AccountsDTOMapper accountsDTOMapper;
 
     public ResponseEntity<?> signup(Accounts accounts) {
         try {

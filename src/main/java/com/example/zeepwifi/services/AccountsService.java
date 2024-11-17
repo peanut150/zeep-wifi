@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.zeepwifi.dto.AccountsCheckDTO;
 import com.example.zeepwifi.dto.AccountsDTO;
-import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.repositories.AccountsRepository;
 
@@ -27,9 +26,6 @@ public class AccountsService {
     
     @Autowired
     AccountsRepository accountsRepository;
-
-    @Autowired
-    AccountsDTOMapper accountsDTOMapper;
 
     // Retrieve all accounts
     public ResponseEntity<?> getAllAccounts(Pageable pageable) {

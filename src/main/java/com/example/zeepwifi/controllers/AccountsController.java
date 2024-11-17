@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.zeepwifi.dto.AccountsCreateDTO;
-import com.example.zeepwifi.mapper.AccountsDTOMapper;
 import com.example.zeepwifi.services.AccountsService;
 
 
@@ -16,9 +15,6 @@ import com.example.zeepwifi.services.AccountsService;
 public class AccountsController {
     @Autowired
     AccountsService accountsService;
-
-    @Autowired
-    AccountsDTOMapper accountsDTOMapper;
 
     // Retrieve all accounts endpoint
     @GetMapping(value = "/all", produces = "application/json")
