@@ -18,22 +18,22 @@ public class Accounts {
     @Column(name = "account_username", nullable = false, unique = true)
     private String accountUsername;
 
-    @Column(name = "first_name", nullable = false, unique = false)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "middle_name", nullable = false, unique = false)
+    @Column(name = "middle_name", nullable = false)
     private String middleName;
 
-    @Column(name = "last_name", nullable = false, unique = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "account_password", nullable = false, unique = false)
+    @Column(name = "account_password", nullable = false)
     private String accountPassword;
 
-    @Column(name = "created_at", nullable = false, unique = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false, unique = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public Long getId() {
