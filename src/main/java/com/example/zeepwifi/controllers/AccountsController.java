@@ -14,7 +14,7 @@ import com.example.zeepwifi.services.AccountsService;
 @RequestMapping("/api/accounts")
 public class AccountsController {
     @Autowired
-    AccountsService accountsService;
+    private AccountsService accountsService;
 
     // Retrieve all accounts endpoint
     @GetMapping(value = "/all", produces = "application/json")
@@ -34,7 +34,7 @@ public class AccountsController {
         return accountsService.updateAccount(id, accountsCreateDTO);
     }
 
-    // Delete account
+    // Delete account endpoint
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         return accountsService.deleteAccount(id);

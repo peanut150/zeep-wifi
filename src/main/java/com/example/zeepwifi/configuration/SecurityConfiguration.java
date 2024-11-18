@@ -18,7 +18,7 @@ import com.example.zeepwifi.utils.JwtUtil;
 @EnableWebSecurity
 public class SecurityConfiguration {
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

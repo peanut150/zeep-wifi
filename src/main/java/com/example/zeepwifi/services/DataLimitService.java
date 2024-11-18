@@ -20,7 +20,7 @@ import com.example.zeepwifi.repositories.DataLimitRepository;
 @Service
 public class DataLimitService {
     @Autowired
-    DataLimitRepository dataLimitRepository;
+    private DataLimitRepository dataLimitRepository;
 
     private final RestTemplate restTemplate = new RestTemplate();
 

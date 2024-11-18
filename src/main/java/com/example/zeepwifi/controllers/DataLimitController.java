@@ -19,7 +19,7 @@ import com.example.zeepwifi.services.DataLimitService;
 @CrossOrigin(origins = "*")
 public class DataLimitController {
     @Autowired
-    DataLimitService dataLimitService;
+    private DataLimitService dataLimitService;
 
     // Retrieve data limit
     @GetMapping(value = "/", produces = "application/json")
