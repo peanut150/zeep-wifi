@@ -24,8 +24,6 @@ public class DataLimitService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private String csrfToken;
-
     // Retrieve data limit from external API
     public ResponseEntity<?> getDataLimit(Integer client_id, Integer package_id, Pageable pageable) {
         String url = String.format("http://192.168.90.151:8080/data/?client_id=%d&package_id=%d", client_id, package_id);
@@ -42,18 +40,12 @@ public class DataLimitService {
                 dataLimit.setCounter(dataLimitDTO.counter);
                 dataLimit.setLimitCount(dataLimitDTO.limit_count);
                 dataLimit.setLimitType(dataLimitDTO.limit_type);
-                dataLimit.setCreatedOn(LocalDateTime.now());
-                dataLimit.setLastModified(LocalDateTime.now());
 
                 dataLimitRepository.save(dataLimit);
-
-                this.csrfToken = dataLimitDTO.csrf_token;
-
-                String csrfToken = dataLimitDTO.csrf_token;
                 
                 return ResponseEntity.ok(new DataLimitDto(
                     dataLimit.getCounter(),
-                    csrfToken,
+                    dataLimitDTO.csrf_token,
                     dataLimit.getLimitCount(),
                     dataLimit.getLimitType()
                 ));
@@ -73,10 +65,20 @@ public class DataLimitService {
     public ResponseEntity<?> addData(
             Integer client_id,
             Integer package_id,
-            Integer value) {
+            Integer value,
+            String csrfToken) {
         String url = String.format("http://192.168.90.151:8080/data/?client_id=%d&package_id=%d&value=%d", client_id, package_id, value);
 
+        System.out.println("CSRF Token: " + csrfToken);
+
         try {
+            if (csrfToken == null || csrfToken.isEmpty()) {
+                System.out.println("CSRF Token at this point: " + csrfToken);
+
+                return new ResponseEntity<>(Collections.singletonMap("message", "CSRF token is missing"),
+                HttpStatus.FORBIDDEN);
+            }
+
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-CSRFToken", csrfToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -90,6 +92,11 @@ public class DataLimitService {
             }
 
         } catch (Exception e) {
+            System.out.println("CSRF Token when Internal Server Error: " + csrfToken);
+            System.out.println("Client ID when Internal Server Error: " + client_id);
+            System.out.println("Package ID when Internal Server Error: " + package_id);
+            System.out.println("Value when Internal Server Error: " + value);
+
             return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

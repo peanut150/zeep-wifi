@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.zeepwifi.dto.DataLimitDto;
 import com.example.zeepwifi.services.DataLimitService;
 
 @RestController
@@ -36,8 +37,9 @@ public class DataLimitController {
     public ResponseEntity<?> addData(
             @RequestParam Integer client_id,
             @RequestParam Integer package_id,
-            @RequestParam Integer value) {
+            @RequestParam Integer value,
+            @RequestHeader("X-CSRFToken") String csrf_token) {
         
-        return dataLimitService.addData(client_id, package_id, value);
+        return dataLimitService.addData(client_id, package_id, value, csrf_token);
     }
 }
