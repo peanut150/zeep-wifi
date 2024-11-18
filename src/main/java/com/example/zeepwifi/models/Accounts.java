@@ -1,7 +1,6 @@
 package com.example.zeepwifi.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
