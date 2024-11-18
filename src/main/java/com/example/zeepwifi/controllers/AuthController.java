@@ -1,6 +1,5 @@
 package com.example.zeepwifi.controllers;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -14,35 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.zeepwifi.dto.RegisterDto;
-import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.services.AuthService;
-import com.example.zeepwifi.utils.JwtUtil;
-import com.example.zeepwifi.utils.PasswordUtil;
 
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    AuthService authService;
-
-    @Autowired
-    JwtUtil jwtUtil;
+    private AuthService authService;
 
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> signup(@RequestBody RegisterDto accountsCreateDTO) {
+    public ResponseEntity<?> signup(@RequestBody RegisterDto registerDto) {
         try {
-            Accounts accounts = new Accounts();
-            accounts.setAccountUsername(accountsCreateDTO.getAccountUsername());
-            accounts.setFirstName(accountsCreateDTO.getFirstName());
-            accounts.setMiddleName(accountsCreateDTO.getMiddleName());
-            accounts.setLastName(accountsCreateDTO.getLastName());
-            accounts.setAccountPassword(new PasswordUtil().hash(accountsCreateDTO.getAccountPassword()));
-            accounts.setCreatedAt(LocalDateTime.now());
-            accounts.setUpdatedAt(LocalDateTime.now());
-
-            return authService.signup(accounts);
+            return authService.signup(registerDto);
         } catch (Exception e) {
             return new ResponseEntity<>(
                 Collections.singletonMap("message", "An unexpected error occurred"),

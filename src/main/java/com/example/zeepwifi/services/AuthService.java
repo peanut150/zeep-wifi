@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.zeepwifi.dto.LoginDto;
+import com.example.zeepwifi.dto.RegisterDto;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.JwtClaim;
 import com.example.zeepwifi.models.JwtType;
@@ -24,21 +25,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class AuthService {
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    PasswordUtil passwordUtil;
+    private PasswordUtil passwordUtil;
 
     @Autowired
-    AccountsRepository accountsRepository;
+    private AccountsRepository accountsRepository;
 
-    public ResponseEntity<?> signup(Accounts accounts) {
+    public ResponseEntity<?> signup(RegisterDto registerDto) {
         try {
-            accountsRepository.save(accounts);
+            Accounts newAccount = new Accounts();
+            newAccount.setAccountUsername(registerDto.getAccountUsername());
+            newAccount.setFirstName(registerDto.getFirstName());
+            newAccount.setMiddleName(registerDto.getMiddleName());
+            newAccount.setLastName(registerDto.getLastName());
+            newAccount.setAccountPassword(passwordUtil.hash(registerDto.getAccountPassword()));
 
-            return new ResponseEntity<>(Collections.singletonMap("message", "Successfully created user"), HttpStatus.CREATED);
+            accountsRepository.save(newAccount);
+
+            return new ResponseEntity<>(Collections.singletonMap("message", "Successfully created user"),
+            HttpStatus.CREATED);
+
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(Collections.singletonMap("message", "Username is already in use"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("message", "Username is already in use"),
+            HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
