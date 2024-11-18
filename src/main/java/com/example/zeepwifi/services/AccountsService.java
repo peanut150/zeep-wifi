@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.zeepwifi.dto.RegisterDto;
-import com.example.zeepwifi.utils.Password;
+import com.example.zeepwifi.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +74,7 @@ public class AccountsService {
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            registerDto.accountPassword = new Password().hash(registerDto.accountPassword);
+            registerDto.accountPassword = new PasswordUtil().hash(registerDto.accountPassword);
             accountsRepository.updateAccount(id, registerDto);
             return new ResponseEntity<>(Collections.singletonMap("message", "Successfully updated account"),
                     HttpStatus.OK);

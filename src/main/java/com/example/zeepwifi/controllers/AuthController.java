@@ -18,7 +18,7 @@ import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.services.AuthService;
 import com.example.zeepwifi.utils.JwtUtil;
-import com.example.zeepwifi.utils.Password;
+import com.example.zeepwifi.utils.PasswordUtil;
 
 
 @RestController
@@ -38,7 +38,7 @@ public class AuthController {
             accounts.setFirstName(accountsCreateDTO.getFirstName());
             accounts.setMiddleName(accountsCreateDTO.getMiddleName());
             accounts.setLastName(accountsCreateDTO.getLastName());
-            accounts.setAccountPassword(new Password().hash(accountsCreateDTO.getAccountPassword()));
+            accounts.setAccountPassword(new PasswordUtil().hash(accountsCreateDTO.getAccountPassword()));
             accounts.setCreatedAt(LocalDateTime.now());
             accounts.setUpdatedAt(LocalDateTime.now());
 

@@ -17,7 +17,7 @@ import com.example.zeepwifi.models.JwtType;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.repositories.AccountsRepository;
 import com.example.zeepwifi.utils.JwtUtil;
-import com.example.zeepwifi.utils.Password;
+import com.example.zeepwifi.utils.PasswordUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +27,7 @@ public class AuthService {
     JwtUtil jwtUtil;
 
     @Autowired
-    Password passwordUtil;
+    PasswordUtil passwordUtil;
 
     @Autowired
     AccountsRepository accountsRepository;
