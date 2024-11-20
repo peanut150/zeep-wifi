@@ -6,8 +6,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Cacheable
+@Data
 @Entity
 @Table(name = "data_limits")
 public class DataLimit {
@@ -44,85 +46,4 @@ public class DataLimit {
     @UpdateTimestamp
     @Column(name = "last_modified", nullable = false)
     private LocalDateTime last_modified;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getClientID() {
-        return client_id;
-    }
-
-    public void setClientID(Integer client_id) {
-        this.client_id = client_id;
-    }
-
-    public Integer getPackageID() {
-        return package_id;
-    }
-
-    public void setPackageID(Integer package_id) {
-        this.package_id = package_id;
-    }
-
-    public Integer getLimitCount() {
-        return limit_count;
-    }
-
-    public void setLimitCount(Integer limit_count) {
-        this.limit_count = limit_count;
-    }
-
-    public String getLimitType() {
-        return limit_type;
-    }
-
-    public void setLimitType(String limit_type) {
-        this.limit_type = limit_type;
-    }
-
-    public Long getCounter() {
-        return counter;
-    }
-
-    public void setCounter(Long counter) {
-        this.counter = counter;
-    }
-
-    public Float getIncomingPackets() {
-        return incoming_packets;
-    }
-
-    public void setIncomingPackets(Float incoming_packets) {
-        this.incoming_packets = incoming_packets;
-    }
-
-    public Float getOutgoingPackets() {
-        return outgoing_packets;
-    }
-
-    public void setOutgoingPackets(Float outgoing_packets) {
-        this.outgoing_packets = outgoing_packets;
-    }
-
-    public LocalDateTime getCreatedOn() {
-        return created_on;
-    }
-
-    public void setCreatedOn(LocalDateTime created_on) {
-        this.created_on = created_on;
-    }
-
-    public LocalDateTime getLastModified() {
-        return last_modified;
-    }
-
-    public void setLastModified(LocalDateTime last_modified) {
-        this.last_modified = last_modified;
-    }
-
 }
