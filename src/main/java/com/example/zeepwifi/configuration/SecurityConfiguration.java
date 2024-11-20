@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.zeepwifi.utils.JwtUtil;
 
@@ -18,7 +19,7 @@ import com.example.zeepwifi.utils.JwtUtil;
 @EnableWebSecurity
 public class SecurityConfiguration {
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -27,7 +28,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/signup").permitAll()
-                        .requestMatchers("/data/**").permitAll()
+                        //.requestMatchers("/api/add-data").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -36,5 +37,10 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

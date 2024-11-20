@@ -1,99 +1,107 @@
 package com.example.zeepwifi.services;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
+import com.example.zeepwifi.dto.DataLimitDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-
-import com.example.zeepwifi.dto.DataLimitDTO;
-import com.example.zeepwifi.models.DataLimit;
-import com.example.zeepwifi.repositories.DataLimitRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class DataLimitService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataLimitService.class);
+
     @Autowired
-    DataLimitRepository dataLimitRepository;
+    private RestTemplate restTemplate;
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
-    private String csrfToken;
-
-    // Retrieve data limit from external API
-    public ResponseEntity<?> getDataLimit(Integer client_id, Integer package_id, Pageable pageable) {
-        String url = String.format("http://192.168.90.151:8080/data/?client_id=%d&package_id=%d", client_id, package_id);
-
+    public DataLimitDto getCsrfToken(Integer clientId, Integer packageId, Integer value) {
+        String getUrl = String.format("http://192.168.90.151:8080/data/?client_id=%s&package_id=%s", clientId, packageId);
+    
         try {
-            ResponseEntity<DataLimitDTO> response = restTemplate.getForEntity(url, DataLimitDTO.class);
-
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                DataLimitDTO dataLimitDTO = response.getBody();
-
-                DataLimit dataLimit = new DataLimit();
-                dataLimit.setClientID(client_id);
-                dataLimit.setPackageID(package_id);
-                dataLimit.setCounter(dataLimitDTO.counter);
-                dataLimit.setLimitCount(dataLimitDTO.limit_count);
-                dataLimit.setLimitType(dataLimitDTO.limit_type);
-                dataLimit.setCreatedOn(LocalDateTime.now());
-                dataLimit.setLastModified(LocalDateTime.now());
-
-                dataLimitRepository.save(dataLimit);
-                
-                return ResponseEntity.ok(new DataLimitDTO(
-                    dataLimit.getCounter(),
-                    this.csrfToken,
-                    dataLimit.getLimitCount(),
-                    dataLimit.getLimitType()
-                ));
-
+            logger.info("Calling Python API with URL: {}", getUrl);
+            ResponseEntity<String> response = restTemplate.exchange(getUrl, HttpMethod.GET, null, String.class);
+    
+            if (response.getStatusCode().is2xxSuccessful()) {
+                String responseBody = response.getBody();
+                if (responseBody == null || responseBody.isEmpty()) {
+                    logger.error("Empty response body from Python API.");
+                    return new DataLimitDto("error", "Empty response body from Python API", null);
+                }
+    
+                JsonNode jsonResponse = new ObjectMapper().readTree(responseBody);
+                String csrfToken = jsonResponse.path("csrf_token").asText();
+                double limitCount = jsonResponse.path("limit_count").asDouble();
+                String limitType = jsonResponse.path("limit_type").asText();
+    
+                if (csrfToken == null || csrfToken.isEmpty()) {
+                    logger.error("CSRF token is missing in the response!");
+                    return new DataLimitDto("error", "CSRF token is missing in the response", null);
+                }
+    
+                logger.info("Successfully retrieved CSRF token: {}", csrfToken);
+    
+                String sessionCookie = getSessionCookie(response.getHeaders());
+                if (sessionCookie == null || sessionCookie.isEmpty()) {
+                    logger.error("Session cookie missing in the response headers!");
+                    return new DataLimitDto("error", "Session cookie missing in the response", null);
+                }
+    
+                DataLimitDto postResponse = triggerPostRequest(clientId, packageId, value, csrfToken, sessionCookie);
+                return new DataLimitDto("success", "CSRF token retrieved and POST request triggered successfully", postResponse.getData());
             } else {
-                return new ResponseEntity<>(Collections.singletonMap("message", "Failed to retrieve data"),
-                HttpStatus.NOT_FOUND);   
+                logger.error("Received non-2xx response: {}", response.getStatusCode());
+                return new DataLimitDto("error", "Non-2xx response from Python API", null);
             }
-
         } catch (Exception e) {
-            return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred while fetching data"),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Error while fetching CSRF token for client_id: {} and package_id: {}", clientId, packageId, e);
+            return new DataLimitDto("error", "Error retrieving CSRF token", e.getMessage());
         }
     }
 
-    // Add data to external API
-    public ResponseEntity<?> addData(
-            Integer client_id,
-            Integer package_id,
-            Integer value) {
-        
-        if (csrfToken == null) {
-            return new ResponseEntity<>(Collections.singletonMap("message", "CSRF token is missing"),
-            HttpStatus.BAD_REQUEST);
-        }
-
-        String url = String.format("http://192.168.90.151:8080/data/?client_id=%d&package_id=%d&value=%d", client_id, package_id, value);
-
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-CSRFToken", csrfToken);
-            //headers.set("Content-Type", "text/html; charset=utf-8");
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return ResponseEntity.ok("Data successfully updated with value: " + value);
-            } else {
-                return new ResponseEntity<>(Collections.singletonMap("message", "Failed to update data"), HttpStatus.NOT_FOUND);
+    private String getSessionCookie(HttpHeaders headers) {
+        for (String cookie : headers.get("Set-Cookie")) {
+            if (cookie.startsWith("session=")) {
+                return cookie.substring("session=".length(), cookie.indexOf(";"));
             }
+        }
+        return null;
+    }
 
+    private DataLimitDto triggerPostRequest(Integer clientId, Integer packageId, Integer value, String csrfToken, String sessionCookie) {
+        try {
+            String postUrl = String.format("http://192.168.90.151:8080/data/?client_id=%s&package_id=%s&value=%s", clientId, packageId, value);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("X-CSRFToken", csrfToken);
+            headers.add("Cookie", "X-CSRFToken=" + csrfToken);
+            headers.add("Cookie", "session=" + sessionCookie);
+            
+            logger.info("Sending POST request with CSRF token and session cookie: {}", csrfToken);
+        
+            String postData = String.format("{\"client_id\": \"%s\", \"package_id\": \"%s\", \"value\": \"%s\"}", clientId, packageId, value);
+            HttpEntity<String> entity = new HttpEntity<>(postData, headers);
+        
+            ResponseEntity<String> postResponse = restTemplate.exchange(postUrl, HttpMethod.POST, entity, String.class);
+        
+            String responseBody = postResponse.getBody();
+            if (responseBody != null) {
+                if (responseBody.contains("CSRF session token is missing")) {
+                    logger.error("CSRF session token is missing in the POST request!");
+                    return new DataLimitDto("error", "CSRF session token is missing in the POST request", responseBody);
+                }
+                logger.info("POST request successful with response: {}", responseBody);
+                return new DataLimitDto("success", "POST request was successful", responseBody);
+            } else {
+                logger.error("Empty response body from POST request!");
+                return new DataLimitDto("error", "Empty response body from POST request", null);
+            }
         } catch (Exception e) {
-            return new ResponseEntity<>(Collections.singletonMap("message", "An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Error while sending POST request for client_id: {}, package_id: {}, value: {}", clientId, packageId, value, e);
+            return new DataLimitDto("error", "Error sending POST request", e.getMessage());
         }
     }
 }

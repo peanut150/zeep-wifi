@@ -4,11 +4,42 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 
 @Cacheable
 @Entity
 @Table(name = "zeep_accounts")
 public class Accounts {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
+
+    @Column(name = "account_username", nullable = false, unique = true)
+    private String accountUsername;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "middle_name", nullable = false)
+    private String middleName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "account_password", nullable = false)
+    private String accountPassword;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
     public Long getId() {
         return id;
     }
@@ -72,31 +103,5 @@ public class Accounts {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    public Long id;
-
-    @Column(name = "account_username", nullable = false, unique = true)
-    public String accountUsername;
-
-    @Column(name = "first_name", nullable = false, unique = false)
-    public String firstName;
-
-    @Column(name = "middle_name", nullable = false, unique = false)
-    public String middleName;
-
-    @Column(name = "last_name", nullable = false, unique = false)
-    public String lastName;
-
-    @Column(name = "account_password", nullable = false, unique = false)
-    public String accountPassword;
-
-    @Column(name = "created_at", nullable = false, unique = false, updatable = false)
-    public LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false, unique = false)
-    public LocalDateTime updatedAt;
 
 }

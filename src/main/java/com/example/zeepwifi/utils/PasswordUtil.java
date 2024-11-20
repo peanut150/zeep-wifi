@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Service
 @NoArgsConstructor
-public class Password {
+public class PasswordUtil {
     public String hash(final String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }

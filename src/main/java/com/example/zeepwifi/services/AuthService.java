@@ -10,44 +10,51 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.zeepwifi.dto.AccountsCheckDTO;
-import com.example.zeepwifi.mapper.AccountsDTOMapper;
+import com.example.zeepwifi.dto.LoginDto;
+import com.example.zeepwifi.dto.RegisterDto;
 import com.example.zeepwifi.models.Accounts;
 import com.example.zeepwifi.models.JwtClaim;
 import com.example.zeepwifi.models.JwtType;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.repositories.AccountsRepository;
 import com.example.zeepwifi.utils.JwtUtil;
-import com.example.zeepwifi.utils.Password;
+import com.example.zeepwifi.utils.PasswordUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AuthService {
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    Password passwordUtil;
+    private PasswordUtil passwordUtil;
 
     @Autowired
-    AccountsRepository accountsRepository;
+    private AccountsRepository accountsRepository;
 
-    @Autowired
-    AccountsDTOMapper accountsDTOMapper;
-
-    public ResponseEntity<?> signup(Accounts accounts) {
+    public ResponseEntity<?> signup(RegisterDto registerDto) {
         try {
-            accountsRepository.save(accounts);
+            Accounts newAccount = new Accounts();
+            newAccount.setAccountUsername(registerDto.getAccountUsername());
+            newAccount.setFirstName(registerDto.getFirstName());
+            newAccount.setMiddleName(registerDto.getMiddleName());
+            newAccount.setLastName(registerDto.getLastName());
+            newAccount.setAccountPassword(passwordUtil.hash(registerDto.getAccountPassword()));
 
-            return new ResponseEntity<>(Collections.singletonMap("message", "Successfully created user"), HttpStatus.CREATED);
+            accountsRepository.save(newAccount);
+
+            return new ResponseEntity<>(Collections.singletonMap("message", "Successfully created user"),
+            HttpStatus.CREATED);
+
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(Collections.singletonMap("message", "Username is already in use"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Collections.singletonMap("message", "Username is already in use"),
+            HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public ResponseEntity<?> login(UserLogin userLogin) {
-        Optional<AccountsCheckDTO> accounts = accountsRepository.findAccountByUsername(userLogin.accountUsername);
+        Optional<LoginDto> accounts = accountsRepository.findAccountByUsername(userLogin.accountUsername);
 
         if (accounts.isEmpty() || (!passwordUtil.verify(userLogin.accountPassword, accounts.get().accountPassword))) {
             return new ResponseEntity<>(Collections.singletonMap("message", "Incorrect username and/or password"), HttpStatus.NOT_FOUND);

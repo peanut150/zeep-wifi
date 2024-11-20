@@ -2,6 +2,9 @@ package com.example.zeepwifi.models;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 
 @Cacheable
@@ -11,34 +14,36 @@ public class DataLimit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
-    public Long id;
+    private Long id;
 
     @Column(name = "client_id", nullable = false)
-    public Integer client_id;
+    private Integer client_id;
 
     @Column(name = "package_id", nullable = false)
-    public Integer package_id;
+    private Integer package_id;
 
     @Column(name = "limit_count", nullable = false)
-    public Integer limit_count;
+    private Integer limit_count;
 
     @Column(name = "limit_type", nullable = false)
-    public String limit_type;
+    private String limit_type;
 
     @Column(name = "counter", nullable = false)
-    public Long counter;
+    private Long counter;
 
     @Column(name = "incoming_packets")
-    public Float incoming_packets;
+    private Float incoming_packets;
 
     @Column(name = "outgoing_packets")
-    public Float outgoing_packets;
+    private Float outgoing_packets;
 
+    @CreationTimestamp
     @Column(name = "created_on", nullable = false, updatable = false)
-    public LocalDateTime created_on;
+    private LocalDateTime created_on;
 
+    @UpdateTimestamp
     @Column(name = "last_modified", nullable = false)
-    public LocalDateTime last_modified;
+    private LocalDateTime last_modified;
 
     public Long getId() {
         return id;

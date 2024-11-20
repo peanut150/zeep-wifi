@@ -12,31 +12,21 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.zeepwifi.dto.AccountsCreateDTO;
-import com.example.zeepwifi.mapper.AccountsDTOMapper;
-import com.example.zeepwifi.models.Accounts;
+import com.example.zeepwifi.dto.RegisterDto;
 import com.example.zeepwifi.models.UserLogin;
 import com.example.zeepwifi.services.AuthService;
-import com.example.zeepwifi.utils.JwtUtil;
 
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    AuthService authService;
-
-    @Autowired
-    JwtUtil jwtUtil;
-
-    @Autowired
-    AccountsDTOMapper accountsDTOMapper;
+    private AuthService authService;
 
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> signup(@RequestBody AccountsCreateDTO accountsCreateDTO) {
+    public ResponseEntity<?> signup(@RequestBody RegisterDto registerDto) {
         try {
-            Accounts accounts = accountsDTOMapper.accountsCreateDTO(accountsCreateDTO);
-            return authService.signup(accounts);
+            return authService.signup(registerDto);
         } catch (Exception e) {
             return new ResponseEntity<>(
                 Collections.singletonMap("message", "An unexpected error occurred"),
